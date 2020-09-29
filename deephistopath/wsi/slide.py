@@ -28,12 +28,14 @@ import re
 import sys
 from deephistopath.wsi import util
 from deephistopath.wsi.util import Time
+from pathlib import Path
 
-BASE_DIR = os.path.join(".", "data")
+# BASE_DIR = os.path.join(".", "data")
+BASE_DIR = Path('/data/tif')
 # BASE_DIR = os.path.join(os.sep, "Volumes", "BigData", "TUPAC")
-TRAIN_PREFIX = "TUPAC-TR-"
-SRC_TRAIN_DIR = os.path.join(BASE_DIR, "training_slides")
-SRC_TRAIN_EXT = "svs"
+TRAIN_PREFIX = ""
+SRC_TRAIN_DIR = os.path.join(BASE_DIR, 'training_data')
+SRC_TRAIN_EXT = "tif"
 DEST_TRAIN_SUFFIX = ""  # Example: "train-"
 DEST_TRAIN_EXT = "png"
 SCALE_FACTOR = 32
@@ -73,7 +75,7 @@ TOP_TILES_ON_ORIGINAL_THUMBNAIL_DIR = os.path.join(BASE_DIR,
 TILE_DIR = os.path.join(BASE_DIR, "tiles_" + DEST_TRAIN_EXT)
 TILE_SUFFIX = "tile"
 
-STATS_DIR = os.path.join(BASE_DIR, "svs_stats")
+STATS_DIR = os.path.join(BASE_DIR, "tif_stats")
 
 
 def open_slide(filename):
@@ -679,7 +681,7 @@ def slide_to_scaled_pil_image(slide_number):
   slide_filepath = get_training_slide_path(slide_number)
   print("Opening Slide #%d: %s" % (slide_number, slide_filepath))
   slide = open_slide(slide_filepath)
-
+  print(slide_filepath)
   large_w, large_h = slide.dimensions
   new_w = math.floor(large_w / SCALE_FACTOR)
   new_h = math.floor(large_h / SCALE_FACTOR)

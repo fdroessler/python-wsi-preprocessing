@@ -35,8 +35,8 @@ from deephistopath.wsi.util import Time
 TISSUE_HIGH_THRESH = 80
 TISSUE_LOW_THRESH = 10
 
-ROW_TILE_SIZE = 1024
-COL_TILE_SIZE = 1024
+ROW_TILE_SIZE = 512
+COL_TILE_SIZE = 512
 NUM_TOP_TILES = 50
 
 DISPLAY_TILE_SUMMARY_LABELS = False
@@ -56,8 +56,8 @@ FADED_MEDIUM_COLOR = (255, 255, 128)
 FADED_LOW_COLOR = (255, 210, 128)
 FADED_NONE_COLOR = (255, 128, 128)
 
-FONT_PATH = "/Library/Fonts/Arial Bold.ttf"
-SUMMARY_TITLE_FONT_PATH = "/Library/Fonts/Courier New Bold.ttf"
+FONT_PATH = "/usr/share/fonts/opentype/urw-base35/NimbusSans-Regular.otf"
+SUMMARY_TITLE_FONT_PATH = "/usr/share/fonts/opentype/urw-base35/NimbusSans-Regular.otf"
 SUMMARY_TITLE_TEXT_COLOR = (0, 0, 0)
 SUMMARY_TITLE_TEXT_SIZE = 24
 SUMMARY_TILE_TEXT_COLOR = (255, 255, 255)
