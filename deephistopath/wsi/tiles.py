@@ -570,7 +570,7 @@ def tile_to_pil_tile(tile):
 
   x, y = t.o_c_s, t.o_r_s
   w, h = t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s
-  tile_region = s.read_region((x, y), 1, (int(w/2), int(h/2)))
+  tile_region = s.read_region((x, y), 0, (w, h))
   # RGBA to RGB
   pil_img = tile_region.convert("RGB")
   return pil_img
