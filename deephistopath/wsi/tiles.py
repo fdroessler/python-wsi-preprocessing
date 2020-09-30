@@ -37,7 +37,7 @@ TISSUE_LOW_THRESH = 10
 
 ROW_TILE_SIZE = 512
 COL_TILE_SIZE = 512
-NUM_TOP_TILES = 50
+NUM_TOP_TILES = 25
 
 DISPLAY_TILE_SUMMARY_LABELS = False
 TILE_LABEL_TEXT_SIZE = 10
@@ -570,7 +570,7 @@ def tile_to_pil_tile(tile):
 
   x, y = t.o_c_s, t.o_r_s
   w, h = t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s
-  tile_region = s.read_region((x, y), 1, (w, h))
+  tile_region = s.read_region((x, y), 1, (int(w/2), int(h/2)))
   # RGBA to RGB
   pil_img = tile_region.convert("RGB")
   return pil_img

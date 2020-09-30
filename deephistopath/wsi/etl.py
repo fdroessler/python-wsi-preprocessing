@@ -18,9 +18,9 @@ df = pd.merge(df_meta, df_label, on='filename')
 train, test = train_test_split(df['class'], test_size=0.1, random_state=42)
 
 train_df = df.loc[train.index]
-train_df['mapping'] = [str(x).zfill(4) for x in range(len(train_df))]
+train_df['mapping'] = [str(x).zfill(4) for x in range(1, len(train_df) + 1)]
 test_df = df.loc[test.index]
-test_df['mapping'] = [str(x).zfill(4) for x in range(len(test_df))]
+test_df['mapping'] = [str(x).zfill(4) for x in range(1, len(test_df) + 1)]
 
 df.to_csv('full.csv')
 train_df.to_csv('train.csv')
