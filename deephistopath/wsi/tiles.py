@@ -22,6 +22,8 @@ matplotlib.use('Agg')
 import colorsys
 import math
 import matplotlib.pyplot as plt
+import imagehash
+from itertools import combinations
 import multiprocessing
 import numpy as np
 import os
@@ -66,6 +68,9 @@ TILE_TEXT_SIZE = 36
 TILE_TEXT_BACKGROUND_COLOR = (255, 255, 255)
 TILE_TEXT_W_BORDER = 5
 TILE_TEXT_H_BORDER = 4
+
+# FONT_PATH = "/Users/florian/Library/Fonts/fontawesome-regular.ttf"
+# SUMMARY_TITLE_FONT_PATH = "/Users/florian/Library/Fonts/fontawesome-regular.ttf"
 
 HSV_PURPLE = 270
 HSV_PINK = 330
@@ -570,7 +575,7 @@ def tile_to_pil_tile(tile):
 
   x, y = t.o_c_s, t.o_r_s
   w, h = t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s
-  tile_region = s.read_region((x, y), 0, (w, h))
+  tile_region = s.read_region((x, y), 1, (w//2, h//2)) # CHANGE
   # RGBA to RGB
   pil_img = tile_region.convert("RGB")
   return pil_img
@@ -638,9 +643,9 @@ def score_tiles(slide_num, np_img=None, dimensions=None, small_tile_in_tile=Fals
   if np_img is None:
     np_img = slide.open_image_np(img_path)
 
-  row_tile_size = round(ROW_TILE_SIZE / slide.SCALE_FACTOR)  # use round?
-  col_tile_size = round(COL_TILE_SIZE / slide.SCALE_FACTOR)  # use round?
-
+  row_tile_size = round(ROW_TILE_SIZE / 16)  # use round?
+  col_tile_size = round(COL_TILE_SIZE / 16)  # use round?
+  
   num_row_tiles, num_col_tiles = get_num_tiles(h, w, row_tile_size, col_tile_size)
 
   tile_sum = TileSummary(slide_num=slide_num,
@@ -1730,6 +1735,11 @@ def hsv_purple_vs_pink_average_factor(rgb, tissue_percentage):
   return factor
 
 
+def score(comb):
+    hash1 = imagehash.dhash(comb[0].get_pil_tile())
+    hash2 = imagehash.dhash(comb[1].get_pil_tile())
+    return hash1 - hash2
+
 class TileSummary:
   """
   Class for tile summary information.
@@ -1820,7 +1830,14 @@ class TileSummary:
        List of the top-scoring tiles.
     """
     sorted_tiles = self.tiles_by_score()
-    top_tiles = sorted_tiles[:NUM_TOP_TILES]
+    n = NUM_TOP_TILES * 2
+    first_n = sorted_tiles[:n]
+    combs = combinations(first_n, 2)
+    a = np.zeros((n,n))
+    a[np.triu_indices(n, 1)] = list(map(score, combs))
+    a[np.tril_indices(n, -1)] = a[np.triu_indices(n, 1)]
+    most_different = np.argsort(a.sum(axis=1))[::-1]
+    top_tiles = np.array(sorted_tiles)[most_different[:NUM_TOP_TILES]].tolist()
     return top_tiles
 
   def get_tile(self, row, col):
