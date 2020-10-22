@@ -31,7 +31,7 @@ from deephistopath.wsi.util import Time
 from pathlib import Path
 
 # BASE_DIR = os.path.join(".", "data")
-BASE_DIR = Path('/data/tif')
+BASE_DIR = Path('/data2/tif')
 # BASE_DIR = os.path.join(os.sep, "Volumes", "BigData", "TUPAC")
 TRAIN_PREFIX = ""
 SRC_TRAIN_DIR = os.path.join(BASE_DIR, 'training_data')

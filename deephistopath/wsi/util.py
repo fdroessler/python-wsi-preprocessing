@@ -126,7 +126,7 @@ def mask_rgb(rgb, mask):
   """
   t = Time()
   result = rgb * np.dstack([mask, mask, mask])
-  np_info(result, "Mask RGB", t.elapsed())
+  # np_info(result, "Mask RGB", t.elapsed())
   return result
 
 

@@ -37,9 +37,9 @@ from deephistopath.wsi.util import Time
 TISSUE_HIGH_THRESH = 80
 TISSUE_LOW_THRESH = 10
 
-ROW_TILE_SIZE = 512
-COL_TILE_SIZE = 512
-NUM_TOP_TILES = 25
+ROW_TILE_SIZE = 256
+COL_TILE_SIZE = 256
+NUM_TOP_TILES = 50
 
 DISPLAY_TILE_SUMMARY_LABELS = False
 TILE_LABEL_TEXT_SIZE = 10
@@ -575,7 +575,7 @@ def tile_to_pil_tile(tile):
 
   x, y = t.o_c_s, t.o_r_s
   w, h = t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s
-  tile_region = s.read_region((x, y), 1, (w//2, h//2)) # CHANGE
+  tile_region = s.read_region((x, y), 4, (int(np.ceil(w/16)), int(np.ceil(h/16)))) # CHANGE
   # RGBA to RGB
   pil_img = tile_region.convert("RGB")
   return pil_img
@@ -643,8 +643,8 @@ def score_tiles(slide_num, np_img=None, dimensions=None, small_tile_in_tile=Fals
   if np_img is None:
     np_img = slide.open_image_np(img_path)
 
-  row_tile_size = round(ROW_TILE_SIZE / 16)  # use round?
-  col_tile_size = round(COL_TILE_SIZE / 16)  # use round?
+  row_tile_size = round(ROW_TILE_SIZE / 2)  # use round?
+  col_tile_size = round(COL_TILE_SIZE / 2)  # use round?
   
   num_row_tiles, num_col_tiles = get_num_tiles(h, w, row_tile_size, col_tile_size)
 
@@ -1830,15 +1830,28 @@ class TileSummary:
        List of the top-scoring tiles.
     """
     sorted_tiles = self.tiles_by_score()
-    n = NUM_TOP_TILES * 2
-    first_n = sorted_tiles[:n]
-    combs = combinations(first_n, 2)
-    a = np.zeros((n,n))
-    a[np.triu_indices(n, 1)] = list(map(score, combs))
-    a[np.tril_indices(n, -1)] = a[np.triu_indices(n, 1)]
-    most_different = np.argsort(a.sum(axis=1))[::-1]
-    top_tiles = np.array(sorted_tiles)[most_different[:NUM_TOP_TILES]].tolist()
-    return top_tiles
+    # n = NUM_TOP_TILES * 2
+    # first_n = sorted_tiles[:n]
+    # combs = combinations(first_n, 2)
+    # a = np.zeros((n,n))
+    # a[np.triu_indices(n, 1)] = list(map(score, combs))
+    # a[np.tril_indices(n, -1)] = a[np.triu_indices(n, 1)]
+    # most_different = np.argsort(a.sum(axis=1))[::-1]
+    # top_tiles = np.array(sorted_tiles)[most_different[:NUM_TOP_TILES]].tolist()
+    print('-'*80)
+    print(len(sorted_tiles))
+    n = 0
+    i = 0
+    return_tiles = []
+    while n < NUM_TOP_TILES:
+      tile = sorted_tiles[i]
+      if  (tile.get_np_tile().shape[0] == ROW_TILE_SIZE) and (tile.get_np_tile().shape[1] == COL_TILE_SIZE):
+        return_tiles.append(tile)
+        n += 1
+        i += 1
+      else:
+        i += 1
+    return return_tiles
 
   def get_tile(self, row, col):
     """
