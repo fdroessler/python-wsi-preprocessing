@@ -679,9 +679,9 @@ def slide_to_scaled_pil_image(slide_number):
     Tuple consisting of scaled-down PIL image, original width, original height, new width, and new height.
   """
   slide_filepath = get_training_slide_path(slide_number)
-  print("Opening Slide #%d: %s" % (slide_number, slide_filepath))
+  # print("Opening Slide #%d: %s" % (slide_number, slide_filepath))
   slide = open_slide(slide_filepath)
-  print(slide_filepath)
+  # print(slide_filepath)
   large_w, large_h = slide.dimensions
   new_w = math.floor(large_w / SCALE_FACTOR)
   new_h = math.floor(large_h / SCALE_FACTOR)
@@ -837,10 +837,10 @@ def slide_stats():
   slide_stats = []
   for slide_num in range(1, num_train_images + 1):
     slide_filepath = get_training_slide_path(slide_num)
-    print("Opening Slide #%d: %s" % (slide_num, slide_filepath))
+    # print("Opening Slide #%d: %s" % (slide_num, slide_filepath))
     slide = open_slide(slide_filepath)
     (width, height) = slide.dimensions
-    print("  Dimensions: {:,d} x {:,d}".format(width, height))
+    # print("  Dimensions: {:,d} x {:,d}".format(width, height))
     slide_stats.append((width, height))
 
   max_width = 0
@@ -983,7 +983,7 @@ def slide_info(display_all_properties=False):
   obj_pow_other_list = []
   for slide_num in range(1, num_train_images + 1):
     slide_filepath = get_training_slide_path(slide_num)
-    print("\nOpening Slide #%d: %s" % (slide_num, slide_filepath))
+    # print("\nOpening Slide #%d: %s" % (slide_num, slide_filepath))
     slide = open_slide(slide_filepath)
     print("Level count: %d" % slide.level_count)
     print("Level dimensions: " + str(slide.level_dimensions))

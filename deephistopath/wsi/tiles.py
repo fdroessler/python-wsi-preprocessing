@@ -22,7 +22,6 @@ matplotlib.use('Agg')
 import colorsys
 import math
 import matplotlib.pyplot as plt
-import imagehash
 from itertools import combinations
 import multiprocessing
 import numpy as np
@@ -1117,7 +1116,7 @@ def np_hsv_hue_histogram(h):
   w, h = canvas.get_width_height()
   np_hist = np.fromstring(canvas.get_renderer().tostring_rgb(), dtype=np.uint8).reshape(h, w, 3)
   plt.close(figure)
-  util.np_info(np_hist)
+  # util.np_info(np_hist)
   return np_hist
 
 
@@ -1142,7 +1141,7 @@ def np_histogram(data, title, bins="auto"):
   w, h = canvas.get_width_height()
   np_hist = np.fromstring(canvas.get_renderer().tostring_rgb(), dtype=np.uint8).reshape(h, w, 3)
   plt.close(figure)
-  util.np_info(np_hist)
+  # util.np_info(np_hist)
   return np_hist
 
 
@@ -1838,12 +1837,16 @@ class TileSummary:
     # a[np.tril_indices(n, -1)] = a[np.triu_indices(n, 1)]
     # most_different = np.argsort(a.sum(axis=1))[::-1]
     # top_tiles = np.array(sorted_tiles)[most_different[:NUM_TOP_TILES]].tolist()
-    print('-'*80)
-    print(len(sorted_tiles))
+    # print('-'*80)
+    # print(len(sorted_tiles))
     n = 0
     i = 0
     return_tiles = []
     while n < NUM_TOP_TILES:
+      if i >= len(sorted_tiles):
+        if len(return_tiles) < 36:
+          return_tiles.extend(return_tiles[-1:]*(36-len(return_tiles)))
+        break
       tile = sorted_tiles[i]
       if  (tile.get_np_tile().shape[0] == ROW_TILE_SIZE) and (tile.get_np_tile().shape[1] == COL_TILE_SIZE):
         return_tiles.append(tile)

@@ -1093,7 +1093,7 @@ def apply_filters_to_image(slide_num, save=True, display=False):
     os.makedirs(slide.FILTER_DIR)
   img_path = slide.get_training_image_path(slide_num)
   np_orig = slide.open_image_np(img_path)
-  filtered_np_img = apply_image_filters(np_orig, slide_num, info, save=save, display=display)
+  filtered_np_img = apply_image_filters(np_orig, slide_num, info, save=False, display=display)
 
   if save:
     t1 = Time()

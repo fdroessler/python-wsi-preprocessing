@@ -36,7 +36,7 @@ def pil_to_np_rgb(pil_img):
   """
   t = Time()
   rgb = np.asarray(pil_img)
-  np_info(rgb, "RGB", t.elapsed())
+  # np_info(rgb, "RGB", t.elapsed())
   return rgb
 
 
