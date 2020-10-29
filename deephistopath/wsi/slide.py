@@ -685,7 +685,7 @@ def slide_to_scaled_pil_image(slide_number):
   large_w, large_h = slide.dimensions
   new_w = math.floor(large_w / SCALE_FACTOR)
   new_h = math.floor(large_h / SCALE_FACTOR)
-  level = slide.get_best_level_for_downsample(SCALE_FACTOR)
+  level = slide.get_best_level_for_downsample(SCALE_FACTOR+2)
   whole_slide_image = slide.read_region((0, 0), level, slide.level_dimensions[level])
   whole_slide_image = whole_slide_image.convert("RGB")
   img = whole_slide_image.resize((new_w, new_h), PIL.Image.BILINEAR)

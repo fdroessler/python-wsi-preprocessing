@@ -559,7 +559,7 @@ def save_tile_data(tile_summary):
   print("%-20s | Time: %-14s  Name: %s" % ("Save Tile Data", str(time.elapsed()), data_path))
 
 
-def tile_to_pil_tile(tile):
+def tile_to_pil_tile(tile, mode=0):
   """
   Convert tile information into the corresponding tile as a PIL image read from the whole-slide image file.
 
@@ -572,15 +572,24 @@ def tile_to_pil_tile(tile):
   t = tile
   slide_filepath = slide.get_training_slide_path(t.slide_num)
   # s = slide.open_slide(slide_filepath)
-  s = pyvips.Image.new_from_file(slide_filepath, page=4)
+  if mode==1:
+    page1 = 4
+  else:
+    page1 = 3
+  s = pyvips.Image.new_from_file(slide_filepath, page=page1)
 
+  if mode==1:
+      scaleing_factor = 8
+  else:
+      scaleing_factor = 16
 
-  x, y = int(np.ceil(t.o_c_s / 16)), int(np.ceil(t.o_r_s/16))
+  print(scaleing_factor)
+  print(page1)
+  x, y = int(np.ceil(t.o_c_s / scaleing_factor)), int(np.ceil(t.o_r_s/scaleing_factor))
   # x, y = t.o_c_s, t.o_r_s
   w, h = t.o_c_e - t.o_c_s, t.o_r_e - t.o_r_s
   # tile_region = s.read_region((x, y), 4, (int(np.ceil(w/16)), int(np.ceil(h/16)))) # CHANGE
-  w, h = int(np.ceil(w/16)), int(np.ceil(h/16))
-  # print(x, y)
+  w, h = int(np.ceil(w/scaleing_factor)), int(np.ceil(h/scaleing_factor))
   if w < 256:
     x -= (257-w)
   if h < 256:
@@ -590,6 +599,8 @@ def tile_to_pil_tile(tile):
     x = s.width - 257
   if y+h > s.height:
     y = s.height - 257
+  w, h = 256, 256
+  x, y = max(x, 0), max(y, 0)
   # print(s.width, s.height)
   # print(x, y)
   region = s.crop(x, y, w, h)
@@ -599,7 +610,7 @@ def tile_to_pil_tile(tile):
   return region
 
 
-def tile_to_np_tile(tile):
+def tile_to_np_tile(tile, mode=0):
   """
   Convert tile information into the corresponding tile as a NumPy image read from the whole-slide image file.
 
@@ -609,7 +620,7 @@ def tile_to_np_tile(tile):
   Return:
     Tile as a NumPy image.
   """
-  pil_img = tile_to_pil_tile(tile)
+  pil_img = tile_to_pil_tile(tile, mode=mode)
   # np_img = util.pil_to_np_rgb(pil_img)
   np_img = np.ndarray(
       buffer=pil_img.write_to_memory(),
@@ -643,7 +654,7 @@ def save_display_tile(tile, save=True, display=False):
     tile_pil_img.show()
 
 
-def score_tiles(slide_num, np_img=None, dimensions=None, small_tile_in_tile=False):
+def score_tiles(slide_num, np_img=None, dimensions=None, small_tile_in_tile=False, mode=0):
   """
   Score all tiles for a slide and return the results in a TileSummary object.
 
@@ -666,8 +677,14 @@ def score_tiles(slide_num, np_img=None, dimensions=None, small_tile_in_tile=Fals
   if np_img is None:
     np_img = slide.open_image_np(img_path)
 
-  row_tile_size = round(ROW_TILE_SIZE / 2)  # use round?
-  col_tile_size = round(COL_TILE_SIZE / 2)  # use round?
+  if mode == 1:
+      zoom_level = 2
+  else:
+      zoom_level = 4
+
+  print(zoom_level)
+  row_tile_size = round(ROW_TILE_SIZE / zoom_level)  # use round?
+  col_tile_size = round(COL_TILE_SIZE / zoom_level)  # use round?
   # row_tile_size = round(ROW_TILE_SIZE / 32)  # use round?
   # col_tile_size = round(COL_TILE_SIZE / 32)  # use round?
   
@@ -1952,8 +1969,8 @@ class Tile:
   def get_pil_tile(self):
     return tile_to_pil_tile(self)
 
-  def get_np_tile(self):
-    return tile_to_np_tile(self)
+  def get_np_tile(self, mode=0):
+    return tile_to_np_tile(self, mode=mode)
 
   def save_tile(self):
     save_display_tile(self, save=True, display=False)
@@ -1978,7 +1995,7 @@ class TissueQuantity(Enum):
   HIGH = 3
 
 
-def dynamic_tiles(slide_num, small_tile_in_tile=False):
+def dynamic_tiles(slide_num, small_tile_in_tile=False, mode=0):
   """
   Generate tile summary with top tiles using original WSI training slide without intermediate image files saved to
   file system.
@@ -1993,7 +2010,7 @@ def dynamic_tiles(slide_num, small_tile_in_tile=False):
   """
   np_img, large_w, large_h, small_w, small_h = slide.slide_to_scaled_np_image(slide_num)
   filt_np_img = filter.apply_image_filters(np_img)
-  tile_summary = score_tiles(slide_num, filt_np_img, (large_w, large_h, small_w, small_h), small_tile_in_tile)
+  tile_summary = score_tiles(slide_num, filt_np_img, (large_w, large_h, small_w, small_h), small_tile_in_tile, mode=mode)
   return tile_summary
 
 
